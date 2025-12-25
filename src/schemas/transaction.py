@@ -25,5 +25,5 @@ class TransactionResponse(BaseModel):
 
 class ClassificationResult(BaseModel):
     risk_score: float = Field(..., ge=0, le=1)
-    inference_time_ms: float = Field(..., gt=0)
+    inference_time_ms: int = Field(..., ge=0)
     priority: Priority
