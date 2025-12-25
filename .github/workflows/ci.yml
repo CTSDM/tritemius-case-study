@@ -1,0 +1,58 @@
+  name: ci
+
+  on:
+    push:
+      branches: [main]
+    pull_request:
+      branches: [main]
+
+  jobs:
+    tests:
+      name: Tests
+      runs-on: self-hosted
+
+      steps:
+        - name: Check out code
+          uses: actions/checkout@v4
+
+        - name: Install uv
+          uses: astral-sh/setup-uv@v4
+
+        - name: Install dependencies
+          run: uv sync --dev --python 3.13
+
+        - name: Run tests
+          env:
+            POSTGRES_USER: test
+            POSTGRES_PASSWORD: test
+            POSTGRES_DB: test
+            POSTGRES_HOST: localhost
+            POSTGRES_EXTERNAL_PORT: "5432"
+            RABBITMQ_QUEUE_PORT: "5672"
+            RABBITMQ_HOST: localhost
+            RABBITMQ_MAX_CHANNELS: "10"
+            RISK_THRESHOLD: "0.8"
+            CALCULATION_TIME_MIN_MS: "50"
+            CALCULATION_TIME_MAX_MS: "500"
+          run: uv run pytest
+
+
+    style:
+      name: Style
+      runs-on: self-hosted
+
+      steps:
+        - name: Check out code
+          uses: actions/checkout@v4
+
+        - name: Install uv
+          uses: astral-sh/setup-uv@v4
+
+        - name: Install dependencies
+          run: uv sync --dev --python 3.13
+
+        - name: Run ruff format check
+          run: uv run ruff format --check .
+
+        - name: Run ruff lint
+          run: uv run ruff check .
