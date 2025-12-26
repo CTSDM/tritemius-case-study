@@ -34,8 +34,8 @@
 
 Esta arquitectura permite escalar los workers horizontalmente y desacoplar el endpoint de la carga de procesamiento de los workers.
 
-## Ejecucion de la arquitectura
-Se necesita `uv` version >= 0.9 y `docker`
+## Ejecución de la arquitectura
+Se necesita `uv` versión >= 0.9 y `docker`
 ### Levantar la arquitectura
 1. Clona el repositorio y accede al directorio creado.
 2. Crea un fichero `.env` con los contenidos de `.env.example`:
@@ -51,23 +51,27 @@ docker compose up -d
 docker compose down
 ```
 ### Scripts para ejecutar pruebas
-En las pruebas, se espera que el 20% de los resultados sean de alta prioridad ya que se ha usado una distribucion uniforme para el calculo de `risk_score`.
-- Enviar 20 transactions a `/transactions` y consultar la base de datos:
+En las pruebas, se espera que el 20% de los resultados sean de alta prioridad ya que se ha usado una distribución uniforme para el cálculo de `risk_score`.
+- Enviar 20 transacciones a `/transactions` y consultar la base de datos:
 ```bash
 uv run scripts/verify_flow.py
 ```
-- Prueba de estres al endpoint `/transactions` con monitoreo de como se vacia la cola:
+- Prueba de estrés al endpoint `/transactions` con monitoreo de cómo se vacía la cola:
 ```bash
-# Prueba basica, 20 requests concurrentes hasta un total de 1000.
+# Prueba básica, 20 requests concurrentes hasta un total de 1000.
 uv run scripts/load_test.py
-# Prueba mas pesada, 50 requests concurrentes hasta un total de 5000.
+```
+```bash
+# Prueba más pesada, 50 requests concurrentes hasta un total de 5000.
 uv run scripts/load_test.py --requests 5000 --concurrency 50
 ```
-- Obtener estadisticas de la base de datos:
+- Obtener estadísticas de la base de datos:
 ```bash
-# Estadisticas totales
+# Estadísticas totales
 uv run scripts/query_db.py
-# Obtener las ultimas 10 transacciones
+```
+```bash
+# Obtener las últimas 10 transacciones
 uv run scripts/query_db.py --recent 10
 ```
 
