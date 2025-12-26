@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     risk_threshold: float
     calculation_time_min_ms: int
     calculation_time_max_ms: int
+    use_dummy: bool
 
     @computed_field
     @property

@@ -34,6 +34,7 @@
             RISK_THRESHOLD: "0.8"
             CALCULATION_TIME_MIN_MS: "50"
             CALCULATION_TIME_MAX_MS: "500"
+            USE_DUMMY=1
           run: uv run pytest
 
 
