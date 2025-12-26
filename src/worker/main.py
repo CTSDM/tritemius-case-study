@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import signal
 import time
 from typing import Awaitable, Callable
 from pydantic import ValidationError
@@ -17,6 +18,8 @@ logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
+
+shutdown_event = asyncio.Event()
 
 
 def work_classify(
@@ -69,7 +72,16 @@ def callback_with_classifier(
     return callback
 
 
+def handle_shutdown(sig: signal.Signals) -> None:
+    logger.info("Received %s, initiating graceful shutdown...", sig.name)
+    shutdown_event.set()
+
+
 async def main() -> None:
+    loop = asyncio.get_running_loop()
+    for sig in (signal.SIGINT, signal.SIGTERM):
+        loop.add_signal_handler(sig, handle_shutdown, sig)
+
     connection = await get_connection()
     async with connection:
         channel = await connection.channel()
@@ -77,9 +89,16 @@ async def main() -> None:
         queue = await channel.declare_queue(name=QueueName.TRANSACTION, durable=True)
         classifier = get_classifier(settings.use_dummy)
         callback = callback_with_classifier(classifier)
-        await queue.consume(callback)
+        consumer_tag = await queue.consume(callback)
 
-        await asyncio.Future()
+        logger.info("Worker started, waiting for messages...")
+        await shutdown_event.wait()
+
+        logger.info("Stopping consumer...")
+        await queue.cancel(consumer_tag)
+        # It immediately closes, it does not wait for messages that are being processed
+
+    logger.info("Worker shutdown complete")
 
 
 if __name__ == "__main__":
