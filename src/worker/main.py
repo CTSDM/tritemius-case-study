@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import time
 from typing import Awaitable, Callable
 from pydantic import ValidationError
@@ -11,6 +12,11 @@ from src.oracle.dummy import DummyClassifier
 from src.schemas.transaction import ClassificationResult, Priority, TransactionInput
 from src.config.config import settings
 from src.pubsub.pubsub import get_connection, QueueName
+
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
 
 
 def work_classify(
@@ -51,13 +57,13 @@ def callback_with_classifier(
             await message.ack()
 
         except ValidationError as e:
-            print(f"Error: could not parse the message into a transaction, {e}")
+            logger.error("Could not parse message into transaction: %s", e)
             await message.nack()
         except PostgresError as e:
-            print(f"Error: could not save the transaction into the db, {e}")
+            logger.error("Could not save transaction to database: %s", e)
             await message.nack()
-        except Exception as e:
-            print(f"Error: Unexpected error{e}")
+        except Exception:
+            logger.exception("Unexpected error processing message")
             await message.nack()
 
     return callback
