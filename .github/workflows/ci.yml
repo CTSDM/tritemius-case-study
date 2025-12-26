@@ -22,19 +22,6 @@
           run: uv sync --dev --python 3.13
 
         - name: Run tests
-          env:
-            POSTGRES_USER: test
-            POSTGRES_PASSWORD: test
-            POSTGRES_DB: test
-            POSTGRES_HOST: localhost
-            POSTGRES_EXTERNAL_PORT: "5432"
-            RABBITMQ_QUEUE_PORT: "5672"
-            RABBITMQ_HOST: localhost
-            RABBITMQ_MAX_CHANNELS: "10"
-            RISK_THRESHOLD: "0.8"
-            CALCULATION_TIME_MIN_MS: "50"
-            CALCULATION_TIME_MAX_MS: "500"
-            USE_DUMMY=1
           run: uv run pytest
 
 

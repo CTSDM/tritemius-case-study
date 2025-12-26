@@ -8,21 +8,21 @@ class Settings(BaseSettings):
     )
 
     # postgres
-    postgres_user: str
-    postgres_password: str
-    postgres_db: str
-    postgres_host: str
-    postgres_external_port: str
+    postgres_user: str = "test"
+    postgres_password: str = "test"
+    postgres_db: str = "test"
+    postgres_host: str = "localhost"
+    postgres_external_port: str = "5432"
     # rabbitmq
-    rabbitmq_queue_port: int
-    rabbitmq_host: str
-    rabbitmq_max_channels: int
+    rabbitmq_queue_port: int = 5672
+    rabbitmq_host: str = "localhost"
+    rabbitmq_max_channels: int = 10
 
     # oracle ml
-    risk_threshold: float
-    calculation_time_min_ms: int
-    calculation_time_max_ms: int
-    use_dummy: bool
+    risk_threshold: float = 0.8
+    calculation_time_min_ms: int = 50
+    calculation_time_max_ms: int = 500
+    use_dummy: bool = True
 
     @computed_field
     @property
