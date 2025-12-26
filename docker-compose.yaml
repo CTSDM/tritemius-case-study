@@ -48,6 +48,11 @@ services:
       POSTGRES_EXTERNAL_PORT: "5432"
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_QUEUE_PORT: "5672"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:8000/healthz"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
     depends_on:
       db-init:
         condition: service_completed_successfully

@@ -1,8 +1,11 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
+from sqlalchemy import text
 from src.pubsub.pubsub import QueueName, get_connection
 from src.api.routes import transactions
 from src.config.config import settings
+from src.db.database import SessionLocal
 from aio_pika import Channel
 from aio_pika.pool import Pool
 
@@ -31,3 +34,27 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 app.include_router(transactions.router, prefix="/transactions")
+
+
+@app.get("/healthz")
+async def healthz():
+    health = {"status": "ok", "rabbitmq": "ok", "postgres": "ok"}
+
+    try:
+        async with app.state.channel_pool.acquire() as channel:
+            await channel.declare_queue(
+                name=QueueName.TRANSACTION, durable=True, passive=True
+            )
+    except Exception:
+        health["rabbitmq"] = "error"
+        health["status"] = "degraded"
+
+    try:
+        async with SessionLocal() as session:
+            await session.execute(text("SELECT 1"))
+    except Exception:
+        health["postgres"] = "error"
+        health["status"] = "degraded"
+
+    status_code = 200 if health["status"] == "ok" else 503
+    return JSONResponse(content=health, status_code=status_code)
