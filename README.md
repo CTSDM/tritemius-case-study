@@ -20,15 +20,15 @@ docker-compose -f docker-compose-dev.yaml up -d
 ```bash
 uv run alembic upgrade head
 ```
-6. Ejecuta FastAPI en una terminal:
+6. Ejecuta FastAPI en una terminal; en caso de que el puerto este ocupado, cambia `API_PORT` en `.env` a otro puerto:
 ```bash
-uv run fastapi dev src/api/main.py
+source .env && uv run fastapi dev src/api/main.py --port=$API_PORT
 ```
 7. Ejecuta el worker en otra terminal:
 ```bash
 uv run python -m src.worker.main
 ```
-Para detener los contenedores:
+8. Para detener los contenedores:
 ```bash
 docker-compose -f docker-compose-dev.yaml down
 ```
