@@ -34,8 +34,45 @@
 
 Esta arquitectura permite escalar los workers horizontalmente y desacoplar el endpoint de la carga de procesamiento de los workers.
 
+## Ejecucion de la arquitectura
+Se necesita `uv` version >= 0.9 y `docker`
+### Levantar la arquitectura
+1. Clona el repositorio y accede al directorio creado.
+2. Crea un fichero `.env` con los contenidos de `.env.example`:
+```bash
+cp .env.example .env
+```
+3. Levanta los contenedores de PostgreSQL, RabbitMQ, FastAPI y Workers (2 instancias):
+```bash
+docker compose up -d
+```
+4. Para detener los contenedores:
+```bash
+docker compose down
+```
+### Scripts para ejecutar pruebas
+En las pruebas, se espera que el 20% de los resultados sean de alta prioridad ya que se ha usado una distribucion uniforme para el calculo de `risk_score`.
+- Enviar 20 transactions a `/transactions` y consultar la base de datos:
+```bash
+uv run scripts/verify_flow.py
+```
+- Prueba de estres al endpoint `/transactions` con monitoreo de como se vacia la cola:
+```bash
+# Prueba basica, 20 requests concurrentes hasta un total de 1000.
+uv run scripts/load_test.py
+# Prueba mas pesada, 50 requests concurrentes hasta un total de 5000.
+uv run scripts/load_test.py --requests 5000 --concurrency 50
+```
+- Obtener estadisticas de la base de datos:
+```bash
+# Estadisticas totales
+uv run scripts/query_db.py
+# Obtener las ultimas 10 transacciones
+uv run scripts/query_db.py --recent 10
+```
+
 ## Desarrollo en local
-Se necesita uv versión >= 0.9 y docker-compose
+Se necesita uv versión >= 0.9 y `docker`
 1. Clona el repositorio y accede al directorio creado.
 2. Crea un fichero `.env` con los contenidos de `.env.example`:
 ```bash
@@ -47,7 +84,7 @@ uv sync --dev
 ```
 4. Levanta los contenedores de PostgreSQL y RabbitMQ:
 ```bash
-docker-compose -f docker-compose-dev.yaml up -d
+docker compose -f docker-compose-dev.yaml up -d
 ```
 5. Ejecuta las migraciones para inicializar la base de datos:
 ```bash
@@ -63,5 +100,5 @@ uv run python -m src.worker.main
 ```
 8. Para detener los contenedores:
 ```bash
-docker-compose -f docker-compose-dev.yaml down
+docker compose -f docker-compose-dev.yaml down
 ```
