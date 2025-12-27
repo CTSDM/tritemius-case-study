@@ -106,3 +106,7 @@ uv run python -m src.worker.main
 ```bash
 docker compose -f docker-compose-dev.yaml down
 ```
+9. Para correr los tests:
+```bash
+uv run pytest
+```
