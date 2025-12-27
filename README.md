@@ -44,7 +44,7 @@ cp .env.example .env
 ```
 3. Levanta los contenedores de PostgreSQL, RabbitMQ, FastAPI y Workers (2 instancias):
 ```bash
-docker compose up -d
+docker compose up -d --wait
 ```
 4. Para detener los contenedores:
 ```bash
