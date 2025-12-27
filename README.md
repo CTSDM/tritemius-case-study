@@ -35,7 +35,7 @@
 Esta arquitectura permite escalar los workers horizontalmente y desacoplar el endpoint de la carga de procesamiento de los workers.
 
 ## Ejecución de la arquitectura
-Se necesita `uv` versión >= 0.9 y `docker`
+Se necesita [`uv`](https://github.com/astral-sh/uv) versión >= 0.9 y `docker`
 ### Levantar la arquitectura
 1. Clona el repositorio y accede al directorio creado.
 2. Crea un fichero `.env` con los contenidos de `.env.example`:
@@ -76,7 +76,7 @@ uv run scripts/query_db.py --recent 10
 ```
 
 ## Desarrollo en local
-Se necesita uv versión >= 0.9 y `docker`
+Se necesita [`uv`](https://github.com/astral-sh/uv) versión >= 0.9 y `docker`
 1. Clona el repositorio y accede al directorio creado.
 2. Crea un fichero `.env` con los contenidos de `.env.example`:
 ```bash
