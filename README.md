@@ -35,7 +35,8 @@
 Esta arquitectura permite escalar los workers horizontalmente y desacoplar el endpoint de la carga de procesamiento de los workers.
 
 ## Ejecución de la arquitectura
-Se necesita [`uv`](https://github.com/astral-sh/uv) versión >= 0.9 y `docker`
+- Se necesita [`uv`](https://github.com/astral-sh/uv) versión >= 0.9 y `docker`
+- Por defecto el puerto de la API es 8123. Se pueden ver más detalles de la API en `http://localhost:8123/docs`
 ### Levantar la arquitectura
 1. Clona el repositorio y accede al directorio creado.
 2. Crea un fichero `.env` con los contenidos de `.env.example`:
@@ -52,6 +53,20 @@ docker compose down
 ```
 ### Scripts para ejecutar pruebas
 En las pruebas, se espera que el 20% de los resultados sean de alta prioridad ya que se ha usado una distribución uniforme para el cálculo de `risk_score`.
+- Enviar post request al endpoint `/transactions`, en caso de ser un payload válido se recibe un código 202:
+```bash
+curl -X POST http://localhost:8123/transactions/ \
+   -H "Content-Type: application/json" \
+   -d '{
+     "tx_hash": "0x5d4c8e9f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d",
+     "from_address": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+     "to_address": "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45",
+     "value_eth": 2.5,
+     "gas_price_gwei": 45,
+     "input_data": "0xa9059cbb00000000000000000000000032be343b94f860124dc4fee278fdc60c6c2260660000000000000000000000000000000000000000000000000de0b6b3a7640000",
+     "timestamp": 1702314500
+   }'
+```
 - Enviar 20 transacciones a `/transactions` y consultar la base de datos:
 ```bash
 uv run scripts/verify_flow.py
